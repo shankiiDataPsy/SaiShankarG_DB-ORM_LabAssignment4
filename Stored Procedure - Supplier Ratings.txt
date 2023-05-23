@@ -1,0 +1,18 @@
+CREATE DEFINER=`gl-shankii-user`@`%` PROCEDURE `GetSupplierRatings`()
+BEGIN
+select x.SUPP_ID, x.SUPP_NAME,x.Rating, 
+case
+	when x.rating >= 5 then 'Excellent Service'
+	when x.rating > 4 then 'Good Service'
+	when x.rating > 2 then 'Average Service'
+	else 'Poor Service'
+end as 'Comment'
+from (
+select s.*, AVG(r.RAT_RATSTARS) as Rating from 
+`order` o inner join rating r on o.ORD_ID=r.ORD_ID
+inner join supplier_pricing sp on sp.PRICING_ID=o.PRICING_ID
+inner join supplier s on s.SUPP_ID=sp.SUPP_ID
+group by s.SUPP_NAME) as x;
+
+
+END
